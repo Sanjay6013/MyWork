@@ -1,0 +1,103 @@
+﻿@{
+    Layout = "_NoNavBarHeader";
+}
+@using Microsoft.AspNetCore.Http.Extensions;
+@model Verification
+
+<div class="container">
+    <div class="row mt-5 mx-auto">
+        <div class="col-sm-4 col-lg-4">
+        </div>
+        <div class="col-sm-4 col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-4 Default-Text-Color">Login</h5>
+                    <div class="row">
+                        <form id="LoginPage">
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"  Id="tranId">
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-12">
+                                    <label asp-for="Email"> </label>
+                                    <input type="text" class="form-control" asp-for="Email" required>
+                                </div>
+                                <div class="col-sm-12 col-lg-12">
+                                    <label asp-for="Password"> </label>
+                                    <input type="text" class="form-control" asp-for="Password" required>
+                                </div>
+                                <div class="col-sm-8 col-md-8  my-2">
+                                    <span class="h5 Default-Text-Color Logout-Curcor" id="forgotPassword">Forgot Password</span>
+                                </div>
+                                <div class="col-sm-12 col-lg-12 my-2 text-end">
+                                    <button type="submit" class="btn btn-primary w-100" id="btnSubmit">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 col-lg-4">
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#Email').val("msanjay6013@gmail.com");
+        $('#Password').val("sanjay");
+    });
+
+    $('#forgotPassword').click(function (e) {
+        $('#tranId').val("ReseatPassword");
+        $.ajax({
+            url: 'forgotPassword',
+            type: 'get',
+            data: {
+                email: $('#Email').val()
+            }
+        })
+            .done(function (e) {
+            })
+            .fail(function (reason) {
+                ShowError("Server not responding, try later");
+            })
+            .then(function (response) {
+                if (response.success) {
+                    ShowSuccess(response.msg)
+                    window.location.href = '/Home/VerificationPage?email=' + $('#Email').val() + '&tranType=' + $('#tranId').val();
+                } else {
+                    ShowWarning(response.msg);
+                }
+            });
+        e.preventDefault();
+        return false;
+    });
+
+    $('#LoginPage').submit(function (e) {
+        $.ajax({
+            url: 'UserLogin',
+            type: 'Post',
+            data: $(this).serialize()
+        })
+            .done(function (e) {
+            })
+            .fail(function (reason) {
+                ShowError("Server not responding, try later");
+            })
+            .then(function (response) {
+                if (response.success) {
+                    ShowSuccess(response.msg)
+                    if (response.data == "Client")
+                        window.location.href = '/Client/Index';
+                    else
+                        window.location.href = '/Freelancer/Index';
+                } else {
+                    ShowWarning(response.msg);
+                }
+            });
+        e.preventDefault();
+        return false;
+    });
+</script>
