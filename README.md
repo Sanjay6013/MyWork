@@ -1,0 +1,2 @@
+# MyWork
+.NET Core Application 
